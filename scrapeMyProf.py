@@ -2,7 +2,7 @@
 '''
 Scrape My Professor
 
-Scrapes reviews off of RMP and puts them in a DataFrame and CSV
+Scrapes reviews and puts them in a DataFrame and CSV
 Can do the scraping by school or by state
 '''
 
@@ -380,16 +380,22 @@ def scrape_faculty(myUrl,schoolID,profID,filename=None,output='DataFrame'):
         print("No ratings for prof "+str(int(profID)))
         driver.quit()
     else:     
-        while True:
+        clicks=0
+        while clicks<=400:
             try:
-                
                 loadMoreButton = driver.find_element_by_id("loadMore")
                 loadMoreButton.click()
-                print('Click')
+                print('Click'+clicks)
+                clicks+=1
                 time.sleep(.1)
             except Exception as e:
                 break
-        print('Complete Prof ' + str(int(profID)) + ' Time ' + time.strftime('%X %x %Z'))
+        if clicks>=400:
+            print('Prof error: '+str(int(profID)))
+            with open("errors", "w") as text_file:
+            print("Prof error: {}".format(str(int(profID)), file=text_file))
+        else:
+            print('Complete Prof ' + str(int(profID)) + ' Time ' + time.strftime('%X %x %Z'))
         html = driver.page_source
         driver.quit()
         if output == 'DataFrame':
